@@ -1,0 +1,49 @@
+\documentclass[a4paper,11pt]{ltjsarticle}
+
+
+% 数式
+\usepackage{amsmath,amsfonts}
+\usepackage{bm}
+% 画像
+\usepackage{graphicx}
+
+\usepackage{caption}
+\captionsetup{labelformat=empty,labelsep=none}
+\begin{document}
+
+\title{信号処理Ⅰ　演習課題}
+\author{氏名:関川　謙人\\学籍番号:2022531033}
+\date{\today}
+\maketitle
+
+\section*{課題1}
+次の回路の差分方程式を求めよ。
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics*[height = 8cm]{kadai12/circ1.png}
+\caption{問題の回路図}
+\end{center}
+\end{figure}
+
+解答:
+差分方程式は、
+\begin{equation*}
+  y(n) = -3x(n) + 2x(n-1) + 7x(n-2) + 0.8y(n-1) - 0.3y(n-2)
+\end{equation*}
+
+\section*{課題2}
+次の差分方程式であらわされる回路を図示せよ
+
+\begin{equation*}
+  y(n) = 5x(n) - 0.2x(n-1) - 3x(n-2) - 0.3y(n-1) + 2y(n-2)
+\end{equation*}
+
+解答:回路図は以下のようになる。
+\begin{figure}[h]
+\begin{center}
+\includegraphics*[height = 8cm]{kadai12/circ2.png}
+\caption{回路図}
+\end{center}
+\end{figure}
+\end{document}

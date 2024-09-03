@@ -1,0 +1,110 @@
+\documentclass[a4paper,11pt]{ltjsarticle}
+
+
+% 数式
+\usepackage{amsmath,amsfonts}
+\usepackage{bm}
+% 画像
+\usepackage{graphicx}
+
+\usepackage{caption}
+\captionsetup{labelformat=empty,labelsep=none}
+\begin{document}
+
+\title{通信工学　演習レポート}
+\author{氏名:関川　謙人\\学籍番号:2022531033}
+\date{\today}
+\maketitle
+
+\section*{問1}
+内部抵抗を$R_{m}$、定格電流を$I_{m}$とすると、
+\begin{gather*}
+  R_{m} = 100 \Omega \\
+  I_{m} = 0.5\mathrm{mA} = 5.0 \times 10^{-3} \mathrm{A}
+\end{gather*}
+1Aの測定範囲においては電流計に$0.5 \times 10^{-3}$Aが流れるため$R_{1}$を通る電圧は$ 0.995$Aである。オームの法則より、電流計に
+かかる電圧$V$は
+\begin{equation*}
+  V = I_{m} \times R_{m} = 0.5 \times 10^{-3} \times 100 = 0.5 \mathrm{V}
+\end{equation*}
+$R_{1}$と電流計は並列であるため、$R_{1}$にかかる電圧は
+\begin{equation*}
+  V = 0.995 \mathrm{A} \times R_{1} 
+\end{equation*}
+である。よって、$R_{1}$は、
+\begin{equation*}
+  R_{1} = \frac{0.5}{0.995} = 0.5025 \Omega
+\end{equation*}
+次に10Aの測定範囲を求める。電流計には$0.5 \times 10^{3}$Aが流れるため、
+$R_{2}$を通るのは9.995Aである。
+電流計の端子電圧は同様に0.5Vであるため、$R_{2}$にかかる電圧は、
+\begin{equation*}
+  V = 9.995 \times R_{2}
+\end{equation*}
+よって$R_{2}$は、
+\begin{equation*}
+  R_{2} = \frac{0.5}{9.995} = 0.0501 \Omega
+\end{equation*}
+よってこの時、
+\begin{gather*}
+  R_{1} = 0.5025 \Omega \\
+  R_{2} = 0.0501 \Omega
+\end{gather*}
+\section*{問2}
+(1)図2において、平衡条件は
+\begin{equation*}
+  \frac{Z_{1}}{Z_{2}} = \frac{Z_{3}}{Z_{4}}
+\end{equation*}
+また、各インピーダンスを以下のように表す。
+\begin{gather*}
+  Z_{1} = \frac{1}{j\omega C_{1}} \\
+  Z_{2} = R_{2} \\
+  Z_{3} = \frac{1}{j\omega C _{3}}\\
+  Z_{4} = R_{x} + j\omega L_{x}
+\end{gather*}
+これを平衡条件の式に代入すると、
+\begin{equation*}
+  \frac{\frac{1}{j\omega C_{1}}}{R_{2}} = 
+  \frac{\frac{1}{j\omega C_{3}}}{R_{x}+j\omega L_{x}}
+\end{equation*}
+これを整理すると、
+\begin{equation*}
+\frac{1}{j\omega C_{1}R_{2}} = \frac{1}{j\omega C_{3}(R_{x}+j\omega L_{x})}
+\end{equation*}
+また、実部と虚部を分離し、それぞれ比較すると
+\begin{gather*}
+  \frac{1}{C_{1}R_{2}} = \frac{R_{x}}{C_{3}(R_{x}^{2}+(\omega L_{x})^{2})} \\
+  \frac{\omega L_{x}}{C_{3}(R_{x}^{2} + (\omega L_{x})^{2})} = 0
+\end{gather*}
+虚部の式より、
+\begin{equation*}
+  \omega L_{x} = 0
+\end{equation*}
+これより、$L_{x}$は0である。よって、
+\begin{equation*}
+  \frac{1}{C_{1}R_{2}} = \frac{1}{C_{3}R_{x}} \\
+\end{equation*}
+よって平衡条件は、
+\begin{equation*}
+  R_{x} = \frac{C_{3}}{C_{1}}R_{2}
+\end{equation*}
+となる。
+
+(2)
+\begin{gather*}
+  C_{1} = 1\mu\mathrm{F} \\
+  C_{3} = 0.5\mu\mathrm{F} \\
+  R_{2} = 1\mathrm{k\Omega} = 1000\Omega
+  R_{3} = 2\mathrm{k\Omega} = 2000\Omega
+\end{gather*}
+以上の値を(1)で求めた式に代入すると、
+\begin{equation*}
+  R_{x} = \frac{0.5}{1} \times 1000 = 500\Omega
+\end{equation*}
+インダクタンス$L_{x}$は0である。このことから、
+\begin{gather*}
+  R_{x} = 500\Omega \\
+  L_{x} = 0
+\end{gather*}
+である。
+\end{document}

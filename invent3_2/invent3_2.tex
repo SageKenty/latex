@@ -1,0 +1,137 @@
+\documentclass[a4paper,titlepage,11pt]{ltjsarticle}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{color}
+\usepackage{here}
+\usepackage{subcaption}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{listings}
+\lstset{
+%プログラム言語(複数の言語に対応，C,C++も可)
+language = python,
+%背景色と透過度
+backgroundcolor={\color[gray]{.90}},
+%枠外に行った時の自動改行
+breaklines = true,
+%自動改行後のインデント量(デフォルトでは20[pt])	
+breakindent = 10pt,
+%標準の書体
+basicstyle = \ttfamily\scriptsize,
+%コメントの書体
+commentstyle = {\itshape \color[cmyk]{1,0.4,1,0}},
+%関数名等の色の設定
+classoffset = 0,
+%キーワード(int, ifなど)の書体
+keywordstyle = {\bfseries \color[cmyk]{0,1,0,0}},
+%表示する文字の書体
+stringstyle = {\ttfamily \color[rgb]{0,0,1}},
+%他オプション：leftline，topline，bottomline，lines，single，shadowbox
+frame = TBrl,
+%frameまでの間隔(行番号とプログラムの間)
+framesep = 5pt,
+%行番号の位置
+numbers = left,
+ %行番号の間隔
+stepnumber = 1,
+%行番号の書体
+numberstyle = \tiny,
+ %タブの大きさ
+tabsize = 4,
+%キャプションの場所
+captionpos = t
+}
+
+\begin{document}
+
+\title{情報システム工学実験3 数理計画法の実装}
+\author{2022531033 関川謙人}
+\date{\today}
+\maketitle
+
+\section{実験}
+\subsection{使用ツール}
+今回は以下のツールを用いてカックロを解くプログラムを作成した。
+\begin{itemize}
+    \item Python
+    \item Python-mip
+\end{itemize}
+\subsection{プログラム}
+プログラムの流れについて説明する。このプログラムは各マスについて1～9の数値を制約に基づいて選択する形で解を求める。
+
+\subsubsection{変数}
+初めに三次元のブール配列を定義する。この三次元配列の奥行きは9とする。この三次元配列は各マスに対してどの数値を選択するかを表す。
+
+\subsubsection{制約}
+制約について説明する。設けた制約は以下の通りである。
+\begin{enumerate}
+  \item[制約1] 各マスにつき一つの数字しか選択できない
+  \item[制約2] 斜め線の右上の数字とその右の連続した空白に入る数字の合計は一致する。
+  \item[制約3] 斜め線の右下の数字とその下の連続した空白に入る数字の合計は一致する。
+  \item[制約4] 連続した空白に同じ数字は入らない。
+\end{enumerate}
+制約を設定するときは縦横すべてのマスを走査してデータによって処理を分けた。
+
+斜め線であった場合の処理は以下の通り
+\begin{enumerate}
+  \item 右上と右下の数値を記録する。
+  \item 縦の連続する空白の数を数える。
+  \item 制約2と制約4を設定する。
+  \item 横の連続する空白の数を数える。
+  \item 制約3と制約4を設定する。
+\end{enumerate}
+設定部分のソースコードは以下の通り。
+
+\begin{lstlisting}
+# 縦についての制約
+# 制約4
+for k in range(9):
+  md += xsum((sol[y + i][x][k]) for i in range(1, rows_flag)) <= 1, 'cols1_' + str(y) + '_' + str(x) + '_' + str(k)
+# 制約2
+md += xsum((sol[y + i][x][k]) for i in range(1, rows_flag)) <= 1, 'cols1_' + str(y) + '_' + str(x) + '_' + str(k)
+
+# 横についての制約
+# 制約4
+for k in range(9):
+  md += xsum((sol[y][x + j][k]) for j in range(1, cols_flag)) <= 1, 'rows1_' + str(y) + '_' + str(x) + '_' + str(k)
+# 制約3
+md += xsum((sol[y][x + j][k] * (k+1)) for j in range(1, cols_flag) for k in range(9)) == int(latter), 'rows2_' + str(y) + '_' + str(x)
+\end{lstlisting}
+
+空白であった場合は制約1を設定する。
+\begin{lstlisting}
+  # 制約1
+  md += xsum(sol[y][x][k] for k in range(9)) == 1, 'sol1_' + str(y) + '_' + str(x)
+\end{lstlisting}
+
+\section{実験結果}
+実験の結果、最終的なタイムは175秒であった。しかし、カックロを設計した時点では200秒であった。タイムを縮めるために以下のことを試みた。
+\begin{itemize}
+  \item 条件文を変える
+  \item 制約1をなくす
+\end{itemize}
+
+条件文を変えるというアプローチについては一定の効果があった。初めのプログラムでは以下のように空白の判定を「\\もしくはxではない」という条件で行ったが、
+「データが存在しない」という条件に変更した。
+\begin{lstlisting}
+  # 初めのプログラムにおける空白の判定
+  '\\' in data[y][x] or 'x' in data[y][x]
+  # 変更後のプログラムにおける空白の判定
+  not data[y][x]
+\end{lstlisting}
+この変更によってタイムは約25秒短縮された。
+
+制約1をなくすというアプローチについては逆効果であった。制約1をなくすことでタイムが遅くなった。
+コンテストを解かせた際には300秒を超過してしまい、解を求めることができなかった。
+
+また最後のタイム計測においてWindowsのWSL環境のpython3では実行できたが、演習室のMACのpython3では実行できなかった。
+この原因は不明であるが、python3で実行せずにpythonの方を利用すると解決した。
+
+\section{考察}
+条件文の変更でタイムが短縮されたのは、「$\backslash$ かx」の判定をおこなわなければならなかったところを「データが存在するのか」という基準に変更したことにある。
+すなわち判定が二回から一回になったことで計算量が減り、タイムが縮まったと考えられる。
+
+制約1をなくしたことでタイムが遅くなってしまった理由は探索の数にある。制約1がなければ数値が決まっても探索をしようとする。
+この結果、制約をなくすことがかえって計算量を増やすことになったと考えられる。
+
+python3で実行できなかった具体的な理由については不明であるが、python3に原因があったと仮定するならば、バージョンの問題であると考えられる。
+
+\end{document}
