@@ -1,0 +1,18 @@
+function [y] = myconv(x, h)
+x = x(:); % 入力信号を縦ベクトルに
+h = h(:); % インパルス応答を縦ベクトルに
+m = length(x); % 入力信号の長さ
+n = length(h); % フィルタの長さ
+y = zeros(m + n - 1, 1); % 出力信号の初期化
+for k = 1:m + (n -  1)
+    if(k < n)
+        l = 0:1:k;
+    else
+        l = 0:1:k-n;
+    end
+
+    for l = 0:1:k
+        y(k) = y(k) + x(k) * h(k - l);
+    end
+
+end

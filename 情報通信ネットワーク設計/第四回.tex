@@ -1,0 +1,159 @@
+\documentclass[a4paper,12pt]{ltjsarticle}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+
+\title{ネットワーク設計と性能解析}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{ネットワーク設計の基本}
+
+\subsection*{性能とコストのバランス}
+\begin{itemize}
+    \item 資源増加の利点: 待ち時間やデータ損失の減少。
+    \item 資源増加の欠点: コストの増加。
+    \item 資源減少の利点: コスト削減。
+    \item 資源減少の欠点: 待ち時間やデータ損失の増加。
+\end{itemize}
+\textbf{経済性を維持しつつ、通信品質を一定に保つことが求められる。}
+
+\subsection*{トラヒック変動への対応}
+\begin{itemize}
+    \item トラヒック量が資源量を超えると輻輳（混雑）発生。
+    \item 資源量がトラヒック量を超えると輻輳回避。
+    \item 長期的に輻輳が継続しないよう設計する必要がある。
+\end{itemize}
+
+\section{待ち行列理論}
+
+\subsection*{目的}
+トラヒック量とネットワーク資源の関係から、システムの性能を定量的に評価する。
+
+\subsection*{モデル化要素}
+\begin{itemize}
+    \item 到着分布: パケットが到着する確率分布（例: ポアソン分布）。
+    \item サービス時間分布: 各パケットが処理される時間。
+    \item サーバ数: パケットを処理する窓口数。
+    \item バッファサイズ: 待ち行列の最大長。
+\end{itemize}
+
+\section{ポアソン分布}
+
+\subsection*{特性}
+\begin{itemize}
+    \item 独立かつランダムな事象の発生を表す分布。
+    \item 例: 単位時間あたりの呼（ネットワーク接続要求）の発生数。
+\end{itemize}
+
+\subsection*{条件}
+\begin{itemize}
+    \item 定常性: 発生率は時間に依存しない。
+    \item 独立性: 発生する事象は互いに独立。
+    \item 希少性: 微小時間内に複数の事象が発生する確率は無視できる。
+\end{itemize}
+
+\subsection*{確率式}
+\[
+P_k(t) = \frac{(\lambda t)^k e^{-\lambda t}}{k!}
+\]
+\begin{itemize}
+    \item \( P_k(t) \): 時間 \( t \) に \( k \) 回発生する確率。
+    \item \( \lambda \): 呼の発生率。
+\end{itemize}
+
+\section{スループット解析}
+
+\subsection*{スループット (\( S \))}
+\begin{itemize}
+    \item 単位時間あたりの成功伝送データ量。
+    \item 物理伝送速度で正規化され、\( 0 \leq S \leq 1 \)。
+    \item トラヒック量 \( G \) とスループット \( S \) の関係で評価。
+\end{itemize}
+
+\subsection*{純アロハ方式の解析}
+\begin{itemize}
+    \item 衝突と再送: 衝突発生時にランダム時間後に再送。
+    \item スループット公式:
+    \[
+    S = G e^{-2G}
+    \]
+    \item 最大スループット: 
+    \[
+    S_{\text{max}} = \frac{1}{2e} \approx 0.184 \quad (G = 0.5)
+    \]
+\end{itemize}
+
+\subsection*{スロット化アロハ方式}
+\begin{itemize}
+    \item 同期送信: スロット時間に合わせて送信。
+    \item スループット公式:
+    \[
+    S = G e^{-G}
+    \]
+    \item 最大スループット: 
+    \[
+    S_{\text{max}} = \frac{1}{e} \approx 0.368 \quad (G = 1.0)
+    \]
+\end{itemize}
+
+\section{CSMA方式の解析}
+
+\subsection*{nonpersistent CSMA}
+\begin{itemize}
+    \item キャリアセンス（通信路確認）後、空いていれば即送信。
+    \item 使用中の場合、ランダム時間待機後に再試行。
+\end{itemize}
+
+\subsection*{スループットの特性}
+\begin{itemize}
+    \item 正規化伝搬遅延時間:
+    \[
+    a = \frac{\tau}{T}
+    \]
+    \item 衝突が減少し、スループットが向上。
+\end{itemize}
+
+\subsection*{スループット公式}
+\[
+S = \frac{G e^{-mG}}{G (1 + 2a) + e^{-mG}}
+\]
+
+\newpage
+
+\section{スループット特性の比較}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}lc@{}}
+    \toprule
+    アクセス方式 & 最大スループット \\ \midrule
+    純アロハ方式 & 0.184 \\
+    スロット化アロハ方式 & 0.368 \\
+    1-persistent CSMA & 0.529 \\
+    nonpersistent CSMA & 0.815 \\
+    p-persistent CSMA (\( p = 0.03 \)) & 0.827 \\ \bottomrule
+    \end{tabular}
+    \caption{スループット特性の比較}
+\end{table}
+
+\section{平均伝送遅延時間の解析}
+
+\subsection*{純アロハ方式}
+\[
+D = T + 2\tau + \left(\frac{1}{S} - 1\right) \cdot (T + B)
+\]
+\begin{itemize}
+    \item \( D \): 平均伝送遅延時間。
+    \item \( T \): 伝送時間。
+    \item \( \tau \): 伝搬遅延時間。
+    \item \( B \): 平均バックオフ時間。
+\end{itemize}
+
+\end{document}
